@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 import os
 
@@ -16,14 +16,30 @@ def _bool_env(name: str, default: bool = False) -> bool:
 
 @dataclass(frozen=True)
 class AuthConfig:
-    database_url: str = os.getenv(
-        "DATABASE_URL",
-        "postgresql+psycopg://postgres:postgres@localhost:5432/rag_auth",
+    database_url: str = field(
+        default_factory=lambda: os.getenv(
+            "DATABASE_URL",
+            "postgresql+psycopg://postgres:postgres@localhost:5432/rag_auth",
+        )
     )
-    admin_username: str = os.getenv("AUTH_ADMIN_USERNAME", "admin")
-    admin_password: str = os.getenv("AUTH_ADMIN_PASSWORD", "CambiarAdmin123!")
-    session_hours: int = int(os.getenv("AUTH_SESSION_HOURS", "8"))
-    max_failed_attempts: int = int(os.getenv("AUTH_MAX_FAILED_ATTEMPTS", "5"))
-    lock_minutes: int = int(os.getenv("AUTH_LOCK_MINUTES", "15"))
-    session_file: Path = Path(os.getenv("AUTH_SESSION_FILE", "storage/auth_session.json"))
-    auth_required: bool = _bool_env("AUTH_REQUIRED", True)
+    admin_username: str = field(
+        default_factory=lambda: os.getenv("AUTH_ADMIN_USERNAME", "admin")
+    )
+    admin_password: str = field(
+        default_factory=lambda: os.getenv("AUTH_ADMIN_PASSWORD", "CambiarAdmin123!")
+    )
+    session_hours: int = field(
+        default_factory=lambda: int(os.getenv("AUTH_SESSION_HOURS", "8"))
+    )
+    max_failed_attempts: int = field(
+        default_factory=lambda: int(os.getenv("AUTH_MAX_FAILED_ATTEMPTS", "5"))
+    )
+    lock_minutes: int = field(
+        default_factory=lambda: int(os.getenv("AUTH_LOCK_MINUTES", "15"))
+    )
+    session_file: Path = field(
+        default_factory=lambda: Path(os.getenv("AUTH_SESSION_FILE", "storage/auth_session.json"))
+    )
+    auth_required: bool = field(
+        default_factory=lambda: _bool_env("AUTH_REQUIRED", True)
+    )

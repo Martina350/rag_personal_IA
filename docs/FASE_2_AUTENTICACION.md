@@ -68,3 +68,17 @@ Con sesión activa, `PersonalRAG.ask` filtra fragmentos según la matriz:
 - `proyecto` → recurso `projects`
 - Acceso `partial`: se incluye el fragmento recortado
 - Acceso `none`: se excluye; si no queda contexto autorizado, se niega la consulta
+
+### Fase D (API FastAPI)
+
+```powershell
+uvicorn api.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+- Docs interactivas: http://127.0.0.1:8000/docs
+- `POST /auth/login` → token Bearer
+- `GET /auth/me`, `POST /auth/logout`
+- `POST /chat` → reutiliza `PersonalRAG` + permisos (fuentes solo admin)
+- `GET /health`
+
+No abra a la vez `src.cli chat` y la API: Qdrant local usa un solo proceso sobre `storage/qdrant`.
