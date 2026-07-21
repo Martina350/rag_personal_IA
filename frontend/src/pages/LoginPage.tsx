@@ -2,6 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { Navigate, useNavigate } from 'react-router-dom'
 import { ApiError } from '../api/client'
 import { useAuth } from '../auth/AuthContext'
+import heroBackground from '../assets/ai_talent_fondo.png'
 
 type FieldErrors = {
   username?: string
@@ -91,10 +92,13 @@ export function LoginPage() {
 
   return (
     <div className="login-page">
-      <section className="login-hero">
-        <p style={{ opacity: 0.9, margin: 0 }}>Consulta documental segura</p>
+      <section
+        className="login-hero"
+        style={{ ['--login-hero-image' as string]: `url(${heroBackground})` }}
+      >
+        <p className="login-hero-kicker">Consulta documental segura</p>
         <h1>Analiza curriculums y certificaciones con control de acceso</h1>
-        <p style={{ opacity: 0.92, maxWidth: 420 }}>
+        <p className="login-hero-copy">
           La información se entrega según tu rol autorizado. Los datos sensibles permanecen protegidos.
         </p>
       </section>
