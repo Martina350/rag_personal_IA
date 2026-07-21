@@ -1,11 +1,30 @@
 import { useEffect, useState, type ReactNode } from 'react'
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { LogOut } from 'lucide-react'
+import { Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
+import logo from '../assets/ai_talent_logo.png'
+import { SIDEBAR_MENU } from './sidebar/menuConfig'
+import { SidebarNav } from './sidebar/SidebarNav'
+
+function userInitials(username?: string) {
+  if (!username) return 'U'
+  const parts = username.trim().split(/[\s._-]+/).filter(Boolean)
+  if (parts.length >= 2) {
+    return `${parts[0][0]}${parts[1][0]}`.toUpperCase()
+  }
+  return username.slice(0, 2).toUpperCase()
+}
 
 export function AppLayout() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [hovered, setHovered] = useState(false)
+
+  // Desktop: rail colapsado (80px). En hover se expande visualmente a 280px.
+  const isCollapsed = true
+  const visuallyExpanded = !isCollapsed || hovered || menuOpen
+  const compact = isCollapsed && !visuallyExpanded
 
   useEffect(() => {
     setMenuOpen(false)
@@ -16,29 +35,60 @@ export function AppLayout() {
     navigate('/login', { replace: true })
   }
 
-  const nav = (
-    <>
-      <div className="sidebar-brand">AI Talent Workspace</div>
-      <nav>
-        <NavLink to="/" end className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} onClick={() => setMenuOpen(false)}>
-          Inicio
-        </NavLink>
-        <NavLink to="/consultar" className={({ isActive }) => `nav-link${isActive ? ' active' : ''}`} onClick={() => setMenuOpen(false)}>
-          Consultar
-        </NavLink>
-      </nav>
-      <div className="sidebar-footer">
-        <button type="button" className="btn btn-ghost btn-block" onClick={handleLogout}>
-          Cerrar sesión
-        </button>
-      </div>
-    </>
-  )
+  const sidebarClass = [
+    'sidebar',
+    isCollapsed ? 'sidebar-collapsed' : '',
+    visuallyExpanded ? 'sidebar-expanded' : '',
+    menuOpen ? 'mobile-open' : '',
+  ]
+    .filter(Boolean)
+    .join(' ')
 
   return (
-    <div className="app-shell">
-      <aside className={`sidebar${menuOpen ? ' mobile-open' : ''}`}>{nav}</aside>
-      {menuOpen ? <button type="button" className="overlay-sidebar" aria-label="Cerrar menú" onClick={() => setMenuOpen(false)} /> : null}
+    <div className="app-shell app-shell-collapsed">
+      <div className="sidebar-slot sidebar-slot-collapsed">
+        <aside
+          className={sidebarClass}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+        >
+          <div className="sidebar-brand">
+            <img src={logo} alt="AI Talent" className="sidebar-logo" />
+            <span className="sidebar-brand-text">AI Talent Workspace</span>
+          </div>
+
+          <SidebarNav items={SIDEBAR_MENU} compact={compact} onNavigate={() => setMenuOpen(false)} />
+
+          <div className="sidebar-footer">
+            <div
+              className="sidebar-user-card"
+              title={`${user?.username ?? ''} · ${user?.role_label ?? ''}`}
+            >
+              <div className="sidebar-avatar" aria-hidden="true">
+                {userInitials(user?.username)}
+              </div>
+              <div className="sidebar-user-meta">
+                <strong className="sidebar-user-name">{user?.username}</strong>
+                <span className="sidebar-user-role">{user?.role_label}</span>
+              </div>
+            </div>
+
+            <button
+              type="button"
+              className="btn btn-logout btn-block"
+              onClick={handleLogout}
+              title="Cerrar sesión"
+            >
+              <LogOut size={18} strokeWidth={1.8} />
+              <span className="nav-label">Cerrar sesión</span>
+            </button>
+          </div>
+        </aside>
+      </div>
+
+      {menuOpen ? (
+        <button type="button" className="overlay-sidebar" aria-label="Cerrar menú" onClick={() => setMenuOpen(false)} />
+      ) : null}
 
       <div className="main">
         <div className="mobile-bar">
@@ -52,10 +102,6 @@ export function AppLayout() {
           <p className="muted" style={{ margin: 0 }}>
             Consulta segura sobre documentos autorizados
           </p>
-          <div style={{ display: 'flex', gap: 12, alignItems: 'center' }}>
-            <span className="badge">Rol activo: {user?.role_label}</span>
-            <strong>{user?.username}</strong>
-          </div>
         </header>
 
         <div className="content">
