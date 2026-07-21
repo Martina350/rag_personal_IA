@@ -5,6 +5,7 @@ Ejemplos:
   python -m auth.cli login
   python -m auth.cli logout
   python -m auth.cli whoami
+  python -m auth.cli change-password
   python -m auth.cli create-user --username ana --role reclutador
   python -m auth.cli revoke-user --username ana
 """
@@ -24,6 +25,7 @@ from .seed import init_schema, seed_roles_and_admin
 from .service import (
     AuthError,
     authenticate,
+    change_password,
     clear_local_session,
     create_user,
     load_local_session_token,
@@ -176,6 +178,67 @@ def cmd_create_user(config: AuthConfig, username: str, role_name: str) -> int:
         engine.dispose()
 
 
+def cmd_change_password(config: AuthConfig) -> int:
+    token = load_local_session_token(config.session_file)
+    default_user = ""
+    if token:
+        db_preview, engine_preview = _db_session(config)
+        try:
+            ctx = resolve_session(db_preview, token)
+            default_user = ctx.username
+        except AuthError:
+            clear_local_session(config.session_file)
+            token = None
+        finally:
+            db_preview.close()
+            engine_preview.dispose()
+
+    prompt = f"Usuario [{default_user}]: " if default_user else "Usuario: "
+    username = console.input(prompt).strip() or default_user
+    if not username:
+        console.print("[red]Debe indicar un usuario.[/red]")
+        return 1
+
+    current = getpass.getpass("Contraseña actual: ")
+    new_password = getpass.getpass("Nueva contraseña: ")
+    confirm = getpass.getpass("Confirmar nueva contraseña: ")
+    if new_password != confirm:
+        console.print("[red]Las contraseñas nuevas no coinciden.[/red]")
+        return 1
+
+    db, engine = _db_session(config)
+    try:
+        change_password(
+            db,
+            username=username,
+            current_password=current,
+            new_password=new_password,
+            keep_token=token if default_user == username else None,
+        )
+        db.commit()
+        console.print(
+            "[green]Contraseña actualizada.[/green] "
+            "Queda solo en PostgreSQL (hash); no se guarda en .env."
+        )
+        if token and default_user == username:
+            console.print("[dim]Su sesión actual se mantuvo; otras sesiones se cerraron.[/dim]")
+        else:
+            clear_local_session(config.session_file)
+            console.print("[yellow]Inicie sesión de nuevo:[/yellow] python -m auth.cli login")
+        return 0
+    except AuthError as error:
+        db.rollback()
+        console.print(f"[red]{error}[/red]")
+        return 1
+    except Exception as error:
+        db.rollback()
+        console.print(f"[red]Error:[/red] {error}")
+        return 1
+    finally:
+        db.close()
+        engine.dispose()
+
+
 def cmd_revoke_user(config: AuthConfig, username: str) -> int:
     token = load_local_session_token(config.session_file)
     if not token:
@@ -212,6 +275,10 @@ def build_parser() -> argparse.ArgumentParser:
     create.add_argument("--role", required=True, help="administrador|reclutador|cliente|estudiante|colega|general")
     revoke = sub.add_parser("revoke-user", help="Revocar usuario (solo admin)")
     revoke.add_argument("--username", required=True)
+    sub.add_parser(
+        "change-password",
+        help="Cambiar contraseña (hash en PostgreSQL; no usa ni escribe .env)",
+    )
     return parser
 
 
@@ -230,6 +297,8 @@ def main() -> int:
         return cmd_create_user(config, args.username, args.role)
     if args.command == "revoke-user":
         return cmd_revoke_user(config, args.username)
+    if args.command == "change-password":
+        return cmd_change_password(config)
     return 1
 
 

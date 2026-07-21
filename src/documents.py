@@ -76,7 +76,12 @@ def clean_text(text: str) -> str:
 def file_metadata(file_path: str) -> dict:
     path = Path(file_path)
     name = path.name.lower()
-    document_type = "certificacion" if "cert" in name or "diplom" in name else "curriculum"
+    if "cert" in name or "diplom" in name:
+        document_type = "certificacion"
+    elif "proy" in name or "project" in name or "quipus" in name:
+        document_type = "proyecto"
+    else:
+        document_type = "curriculum"
     priority = 100 if any(word in name for word in ("cv", "curriculum", "hoja")) else 70
     return {
         "file_name": path.name,

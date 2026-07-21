@@ -81,3 +81,20 @@ def test_revoke_blocks_login(db_session):
     session.commit()
     with pytest.raises(AuthError, match="revocado"):
         authenticate(session, config, "visita", "Visita123!")
+
+
+def test_change_password(db_session):
+    from auth.service import change_password
+
+    session, config = db_session
+    change_password(
+        session,
+        username="admin",
+        current_password="AdminTest123!",
+        new_password="NuevaClave999!",
+    )
+    session.commit()
+    with pytest.raises(AuthError):
+        authenticate(session, config, "admin", "AdminTest123!")
+    ctx = authenticate(session, config, "admin", "NuevaClave999!")
+    assert ctx.username == "admin"

@@ -70,6 +70,46 @@ def revoke_user(db: Session, username: str) -> User:
     return user
 
 
+def change_password(
+    db: Session,
+    *,
+    username: str,
+    current_password: str,
+    new_password: str,
+    keep_token: str | None = None,
+) -> User:
+    """Actualiza el hash en la DB. No guarda la clave en .env."""
+    if len(new_password) < 8:
+        raise AuthError("La nueva contraseña debe tener al menos 8 caracteres.")
+    if new_password == current_password:
+        raise AuthError("La nueva contraseña debe ser distinta a la actual.")
+
+    user = db.query(User).filter(User.username == username.strip()).first()
+    if not user:
+        raise AuthError("Credenciales inválidas.")
+    if not user.is_active:
+        raise AuthError("Usuario revocado.")
+    if not verify_password(user.password_hash, current_password):
+        log_event(
+            db,
+            action="password_change_failed",
+            username=username,
+            user_id=user.id,
+            detail="bad_current_password",
+        )
+        raise AuthError("Credenciales inválidas.")
+
+    user.password_hash = hash_password(new_password)
+    user.failed_attempts = 0
+    user.locked_until = None
+    for session in user.sessions:
+        if keep_token and session.token == keep_token:
+            continue
+        session.revoked = True
+    log_event(db, action="password_changed", username=username, user_id=user.id)
+    return user
+
+
 def authenticate(
     db: Session,
     config: AuthConfig,

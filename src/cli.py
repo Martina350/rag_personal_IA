@@ -167,14 +167,18 @@ def command_chat(config: AppConfig) -> int:
                     pass
 
             start = time.perf_counter()
-            result = rag.ask(query, role)
+            permissions = auth_ctx.permissions if auth_ctx is not None else None
+            result = rag.ask(query, role, permissions=permissions)
             elapsed = time.perf_counter() - start
-            console.print(Panel(result["answer"], title=f"Respuesta | {elapsed:.2f}s"))
+            title = f"Respuesta | {elapsed:.2f}s"
+            if result.get("filtered"):
+                title += " | contexto filtrado por permisos"
+            console.print(Panel(result["answer"], title=title))
             if debug:
                 for source in result["sources"]:
                     console.print(
-                        f"[dim]{source['file_name']} | score={source['score']} | "
-                        f"{source['text']}[/dim]"
+                        f"[dim]{source['file_name']} | {source.get('document_type')} | "
+                        f"score={source['score']} | {source['text']}[/dim]"
                     )
     finally:
         rag.close()

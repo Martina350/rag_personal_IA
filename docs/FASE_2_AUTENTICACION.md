@@ -58,3 +58,13 @@ python -m src.cli chat
 ```
 
 Carpetas previstas del monorepo: `auth/` (fase 2), `api/` (FastAPI), `frontend/` (React-Vite).
+
+### Fase C (autorización sobre el RAG)
+
+Con sesión activa, `PersonalRAG.ask` filtra fragmentos según la matriz:
+
+- `curriculum` → recurso `profile`
+- `certificacion` → recurso `certifications`
+- `proyecto` → recurso `projects`
+- Acceso `partial`: se incluye el fragmento recortado
+- Acceso `none`: se excluye; si no queda contexto autorizado, se niega la consulta
