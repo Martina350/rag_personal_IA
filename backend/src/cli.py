@@ -187,7 +187,8 @@ def command_chat(config: AppConfig) -> int:
 def command_evaluate(config: AppConfig) -> int:
     cases = json.loads(
         (BACKEND_ROOT / "evaluation" / "questions.json").read_text(encoding="utf-8")
-    )    rag = PersonalRAG(config)
+    )
+    rag = PersonalRAG(config)
     role = get_role("5")
     passed = 0
     durations = []
