@@ -9,6 +9,7 @@ import {
   RefreshCw,
   Send,
   Shield,
+  ShieldCheck,
   SlidersHorizontal,
   Sparkles,
   ThumbsDown,
@@ -173,6 +174,18 @@ export function ChatPage() {
     localStorage.removeItem(`${HISTORY_KEY}:${user.username}`)
   }
 
+  function startNewAnalysis() {
+    setActiveId(null)
+    setPendingQuestion(null)
+    setQuestion('')
+    setError(null)
+    setFeedback(null)
+    setCopied(false)
+    setElapsedMs(null)
+    setHistoryOpen(false)
+    setToneOpen(false)
+  }
+
   async function copyAnswer(text: string) {
     try {
       await navigator.clipboard.writeText(text)
@@ -189,98 +202,105 @@ export function ChatPage() {
 
   return (
     <div className="chat-page">
-      <header className="chat-header">
-        <div className="chat-header-copy">
-          <h1>Consultar</h1>
-          <p className="muted">Formula tu pregunta. El acceso a la información depende de tu rol.</p>
-        </div>
-
-        <div className="chat-header-actions" ref={historyPanelRef}>
-          <button
-            type="button"
-            className={`chat-icon-btn${historyOpen ? ' active' : ''}`}
-            data-history-trigger
-            aria-label="Abrir historial"
-            title="Historial"
-            onClick={() => {
-              setHistoryOpen((open) => !open)
-              setToneOpen(false)
-            }}
-          >
-            <History size={20} strokeWidth={1.8} />
-            {history.length > 0 ? <span className="chat-icon-badge">{history.length}</span> : null}
-          </button>
-
-          {historyOpen ? (
-            <div className="history-panel" role="dialog" aria-label="Historial de consultas">
-              <div className="history-panel-head">
-                <div>
-                  <strong>Historial</strong>
-                  <p className="muted">Consultas recientes de esta sesión</p>
-                </div>
-                <div className="history-panel-actions">
-                  <button
-                    type="button"
-                    className="chat-icon-btn danger"
-                    onClick={clearHistory}
-                    disabled={!history.length}
-                    title="Limpiar historial"
-                    aria-label="Limpiar historial"
-                  >
-                    <Trash2 size={16} strokeWidth={1.8} />
-                  </button>
-                  <button
-                    type="button"
-                    className="chat-icon-btn"
-                    onClick={() => setHistoryOpen(false)}
-                    aria-label="Cerrar historial"
-                  >
-                    <X size={16} strokeWidth={1.8} />
-                  </button>
-                </div>
-              </div>
-
-              {history.length === 0 ? (
-                <p className="empty history-empty">Aún no hay consultas en esta sesión.</p>
-              ) : (
-                <div className="history-list">
-                  {history.map((item) => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      className={`history-item${item.id === activeId ? ' active' : ''}`}
-                      onClick={() => {
-                        setActiveId(item.id)
-                        setHistoryOpen(false)
-                        setFeedback(null)
-                        setCopied(false)
-                        setElapsedMs(null)
-                        setPendingQuestion(null)
-                      }}
-                    >
-                      <span className="history-item-icon" aria-hidden>
-                        <MessageSquareText size={16} strokeWidth={1.8} />
-                      </span>
-                      <span className="history-item-body">
-                        <strong>
-                          {item.question.length > 72 ? `${item.question.slice(0, 72)}…` : item.question}
-                        </strong>
-                        <span>
-                          {formatDateTime(item.createdAt)} · {toneLabel(item.toneKey)}
-                        </span>
-                      </span>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          ) : null}
-        </div>
-      </header>
-
       {error ? <div className="alert alert-error">{error}</div> : null}
 
       <div className="chat-shell">
+        <header className="chat-topbar">
+          <button type="button" className="chat-topbar-new" onClick={startNewAnalysis} disabled={loading}>
+            <Sparkles size={18} strokeWidth={1.8} />
+            <span>Nuevo Análisis</span>
+          </button>
+
+          <div className="chat-topbar-right">
+            <div className="chat-topbar-secure">
+              <ShieldCheck size={16} strokeWidth={1.8} />
+              <span>Conexión segura</span>
+            </div>
+
+            <div className="chat-topbar-history" ref={historyPanelRef}>
+              <button
+                type="button"
+                className={`chat-icon-btn${historyOpen ? ' active' : ''}`}
+                data-history-trigger
+                aria-label="Abrir historial"
+                title="Historial"
+                onClick={() => {
+                  setHistoryOpen((open) => !open)
+                  setToneOpen(false)
+                }}
+              >
+                <History size={18} strokeWidth={1.8} />
+                {history.length > 0 ? <span className="chat-icon-badge">{history.length}</span> : null}
+              </button>
+
+              {historyOpen ? (
+                <div className="history-panel" role="dialog" aria-label="Historial de consultas">
+                  <div className="history-panel-head">
+                    <div>
+                      <strong>Historial</strong>
+                      <p className="muted">Consultas recientes de esta sesión</p>
+                    </div>
+                    <div className="history-panel-actions">
+                      <button
+                        type="button"
+                        className="chat-icon-btn danger"
+                        onClick={clearHistory}
+                        disabled={!history.length}
+                        title="Limpiar historial"
+                        aria-label="Limpiar historial"
+                      >
+                        <Trash2 size={16} strokeWidth={1.8} />
+                      </button>
+                      <button
+                        type="button"
+                        className="chat-icon-btn"
+                        onClick={() => setHistoryOpen(false)}
+                        aria-label="Cerrar historial"
+                      >
+                        <X size={16} strokeWidth={1.8} />
+                      </button>
+                    </div>
+                  </div>
+
+                  {history.length === 0 ? (
+                    <p className="empty history-empty">Aún no hay consultas en esta sesión.</p>
+                  ) : (
+                    <div className="history-list">
+                      {history.map((item) => (
+                        <button
+                          key={item.id}
+                          type="button"
+                          className={`history-item${item.id === activeId ? ' active' : ''}`}
+                          onClick={() => {
+                            setActiveId(item.id)
+                            setHistoryOpen(false)
+                            setFeedback(null)
+                            setCopied(false)
+                            setElapsedMs(null)
+                            setPendingQuestion(null)
+                          }}
+                        >
+                          <span className="history-item-icon" aria-hidden>
+                            <MessageSquareText size={16} strokeWidth={1.8} />
+                          </span>
+                          <span className="history-item-body">
+                            <strong>
+                              {item.question.length > 72 ? `${item.question.slice(0, 72)}…` : item.question}
+                            </strong>
+                            <span>
+                              {formatDateTime(item.createdAt)} · {toneLabel(item.toneKey)}
+                            </span>
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              ) : null}
+            </div>
+          </div>
+        </header>
+
         <div className="chat-messages" ref={messagesRef}>
           {!showUserBubble && !loading ? (
             <div className="chat-empty">
@@ -429,9 +449,9 @@ export function ChatPage() {
           <div className="composer-box">
             <textarea
               id="question"
-              rows={2}
+              rows={1}
               maxLength={4000}
-              placeholder="Haz una pregunta sobre el talento o procesos"
+              placeholder="Ej: ¿Cuáles son las habilidades blandas de los candidatos seleccionados?"
               value={question}
               disabled={loading}
               aria-label="Pregunta"
@@ -445,7 +465,6 @@ export function ChatPage() {
                 }
               }}
             />
-            <p className="composer-hint">Ej: ¿Cuáles son las habilidades blandas de los candidatos seleccionados?</p>
 
             <div className="composer-toolbar">
               <div className="composer-tone" ref={toneMenuRef}>
