@@ -15,3 +15,8 @@ rich
 langdetect
 requests
 pytest
+sqlalchemy>=2.0
+psycopg[binary]>=3.1
+argon2-cffi
+fastapi
+uvicorn

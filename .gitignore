@@ -11,3 +11,4 @@ data/versions/*
 !data/versions/.gitkeep
 !storage/qdrant/.gitkeep
 !storage/manifests/.gitkeep
+storage/auth_session.json

@@ -20,7 +20,7 @@
 
 ## Deber: interfaz web
 
-Construya una interfaz web que reutilice `PersonalRAG`.
+Conste igual forma revisarlo con elruya una interfaz web que reutilice `PersonalRAG`.
 
 Requisitos:
 

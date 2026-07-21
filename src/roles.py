@@ -18,3 +18,10 @@ def menu_roles() -> str:
 
 def get_role(selection: str) -> dict:
     return ROLES.get(selection.strip(), ROLES["5"])
+
+
+def get_role_by_key(key: str) -> dict:
+    for role in ROLES.values():
+        if role["key"] == key:
+            return role
+    return ROLES["5"]

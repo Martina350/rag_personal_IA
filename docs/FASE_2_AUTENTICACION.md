@@ -45,4 +45,16 @@ Las contraseñas nunca deben guardarse en texto plano.
 
 ## Actividad
 
-Diseñe una base SQLite con tablas `users`, `roles`, `permissions` y `audit_events`. Implemente autenticación por consola antes de migrar a web.
+Diseñe una base con tablas `users`, `roles`, `permissions` y `audit_events`
+(más `sessions` para expiración). En este repositorio la implementación usa
+**PostgreSQL + pgAdmin** (equivalente funcional a SQLite del enunciado pedagógico).
+
+Implemente autenticación por consola antes de migrar a web:
+
+```powershell
+python -m auth.cli init-db
+python -m auth.cli login
+python -m src.cli chat
+```
+
+Carpetas previstas del monorepo: `auth/` (fase 2), `api/` (FastAPI), `frontend/` (React-Vite).
