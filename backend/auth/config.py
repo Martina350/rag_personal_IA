@@ -6,12 +6,19 @@ import os
 
 from dotenv import load_dotenv
 
-load_dotenv()
+BACKEND_ROOT = Path(__file__).resolve().parents[1]
+load_dotenv(BACKEND_ROOT / ".env")
 
 
 def _bool_env(name: str, default: bool = False) -> bool:
     value = os.getenv(name, str(default)).strip().lower()
     return value in {"1", "true", "yes", "si", "sí", "on"}
+
+
+def _path_env(name: str, default: str) -> Path:
+    raw = os.getenv(name, default)
+    path = Path(raw)
+    return path if path.is_absolute() else BACKEND_ROOT / path
 
 
 @dataclass(frozen=True)
@@ -38,7 +45,7 @@ class AuthConfig:
         default_factory=lambda: int(os.getenv("AUTH_LOCK_MINUTES", "15"))
     )
     session_file: Path = field(
-        default_factory=lambda: Path(os.getenv("AUTH_SESSION_FILE", "storage/auth_session.json"))
+        default_factory=lambda: _path_env("AUTH_SESSION_FILE", "storage/auth_session.json")
     )
     auth_required: bool = field(
         default_factory=lambda: _bool_env("AUTH_REQUIRED", True)

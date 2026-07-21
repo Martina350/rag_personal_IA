@@ -1,5 +1,7 @@
 # Fase 2: autenticación y autorización
 
+> Implementación operativa y monorepo: consulte `docs/FASE_2_IMPLEMENTACION.md`.
+
 ## Objetivo
 
 Permitir consultas únicamente a usuarios registrados y con claves autorizadas.

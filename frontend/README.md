@@ -1,11 +1,20 @@
 # Frontend — RAG Personal (Fase E)
 
-Interfaz React + Vite. Consume únicamente la API FastAPI existente.
+Interfaz React + Vite. Consume únicamente la API FastAPI del monorepo.
 
 ## Requisitos
 
-- Backend en marcha: `uvicorn api.main:app --reload --host 127.0.0.1 --port 8000`
-- Node.js 20+
+1. Activar el venv en la raíz del repo.
+2. Backend en marcha desde `backend/`:
+
+```powershell
+cd backend
+uvicorn api.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+3. Node.js 20+.
+
+Guía completa: `docs/FASE_2_IMPLEMENTACION.md`.
 
 ## Desarrollo
 
@@ -17,13 +26,11 @@ npm run dev
 
 Abrir http://127.0.0.1:5173
 
-## Alcance (EJERCICIOS + FASE_2)
+## Alcance
 
-- Login autenticado
-- Inicio
-- Selección de tono + consulta
-- Historial local
-- Carga y errores seguros
-- Responsive
-- Fuentes solo para administrador
-- Sin rutas internas ni paneles admin
+- Login autenticado  
+- Inicio  
+- Consultar (tono + historial local)  
+- Carga y errores seguros  
+- Fuentes solo administrador  
+- Sin panel admin web  

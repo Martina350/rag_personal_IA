@@ -3,7 +3,6 @@ import json
 import shutil
 import sys
 import time
-from pathlib import Path
 
 import requests
 from rich.console import Console
@@ -14,7 +13,7 @@ from auth.config import AuthConfig
 from auth.service import AuthError
 
 from .auth_gate import audit_chat_query, require_auth_context
-from .config import AppConfig
+from .config import AppConfig, BACKEND_ROOT
 from .ingest import ingest_documents
 from .rag import PersonalRAG
 from .roles import get_role, get_role_by_key, menu_roles
@@ -57,7 +56,7 @@ def command_check(config: AppConfig) -> int:
     except Exception as error:
         table.add_row("Ollama API", "ERROR", str(error))
 
-    usage = shutil.disk_usage(Path.cwd())
+    usage = shutil.disk_usage(BACKEND_ROOT)
     free_gb = usage.free / (1024 ** 3)
     table.add_row(
         "Espacio libre",
@@ -186,8 +185,9 @@ def command_chat(config: AppConfig) -> int:
 
 
 def command_evaluate(config: AppConfig) -> int:
-    cases = json.loads(Path("evaluation/questions.json").read_text(encoding="utf-8"))
-    rag = PersonalRAG(config)
+    cases = json.loads(
+        (BACKEND_ROOT / "evaluation" / "questions.json").read_text(encoding="utf-8")
+    )    rag = PersonalRAG(config)
     role = get_role("5")
     passed = 0
     durations = []
