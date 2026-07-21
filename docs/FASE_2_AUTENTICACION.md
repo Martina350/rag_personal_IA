@@ -82,3 +82,15 @@ uvicorn api.main:app --reload --host 127.0.0.1 --port 8000
 - `GET /health`
 
 No abra a la vez `src.cli chat` y la API: Qdrant local usa un solo proceso sobre `storage/qdrant`.
+
+### Fase E (frontend React + Vite)
+
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+
+- http://127.0.0.1:5173
+- Pantallas: login, inicio, consultar (tono + historial local)
+- Solo APIs actuales; sin administración web
