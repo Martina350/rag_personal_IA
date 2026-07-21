@@ -34,7 +34,7 @@ export function LoginPage() {
     <div className="login-page">
       <section className="login-hero">
         <p style={{ opacity: 0.9, margin: 0 }}>Consulta documental segura</p>
-        <h1>Analiza experiencia y certificaciones con control de acceso</h1>
+        <h1>Analiza curriculums y certificaciones con control de acceso</h1>
         <p style={{ opacity: 0.92, maxWidth: 420 }}>
           La información se entrega según tu rol autorizado. Los datos sensibles permanecen protegidos.
         </p>
