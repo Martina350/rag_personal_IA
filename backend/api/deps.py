@@ -54,3 +54,12 @@ def get_current_user(
             detail=str(error),
             headers={"WWW-Authenticate": "Bearer"},
         ) from error
+
+
+def require_admin(ctx: AuthContext = Depends(get_current_user)) -> AuthContext:
+    if not ctx.is_admin:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Solo el administrador puede realizar esta acción.",
+        )
+    return ctx

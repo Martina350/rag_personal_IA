@@ -3,7 +3,7 @@ import { LogOut } from 'lucide-react'
 import { Outlet, useNavigate } from 'react-router-dom'
 import { useAuth } from '../auth/AuthContext'
 import logo from '../assets/ai_talent_logo.png'
-import { SIDEBAR_MENU } from './sidebar/menuConfig'
+import { menuForUser } from './sidebar/menuConfig'
 import { SidebarNav } from './sidebar/SidebarNav'
 
 function userInitials(username?: string) {
@@ -57,7 +57,11 @@ export function AppLayout() {
             <span className="sidebar-brand-text">AI Talent Workspace</span>
           </div>
 
-          <SidebarNav items={SIDEBAR_MENU} compact={compact} onNavigate={() => setMenuOpen(false)} />
+          <SidebarNav
+            items={menuForUser(Boolean(user?.is_admin))}
+            compact={compact}
+            onNavigate={() => setMenuOpen(false)}
+          />
 
           <div className="sidebar-footer">
             <div

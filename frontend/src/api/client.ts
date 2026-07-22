@@ -1,4 +1,4 @@
-import type { ChatResponse, LoginResponse, UserMe } from '../types'
+import type { AdminRole, AdminUser, ChatResponse, LoginResponse, UserMe } from '../types'
 
 const API_BASE = (import.meta.env.VITE_API_BASE_URL as string | undefined)?.replace(/\/$/, '') || ''
 
@@ -121,5 +121,35 @@ export function askChat(token: string, question: string, toneKey: string) {
     headers: { Authorization: `Bearer ${token}` },
     body: JSON.stringify({ question, tone_key: toneKey }),
     timeoutMs: CHAT_TIMEOUT_MS,
+  })
+}
+
+export function fetchAdminUsers(token: string) {
+  return request<AdminUser[]>('/admin/users', {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+}
+
+export function fetchAdminRoles(token: string) {
+  return request<AdminRole[]>('/admin/roles', {
+    headers: { Authorization: `Bearer ${token}` },
+  })
+}
+
+export function createAdminUser(
+  token: string,
+  payload: { username: string; password: string; role_name: string },
+) {
+  return request<AdminUser>('/admin/users', {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
+    body: JSON.stringify(payload),
+  })
+}
+
+export function revokeAdminUser(token: string, username: string) {
+  return request<{ message: string }>(`/admin/users/${encodeURIComponent(username)}/revoke`, {
+    method: 'POST',
+    headers: { Authorization: `Bearer ${token}` },
   })
 }

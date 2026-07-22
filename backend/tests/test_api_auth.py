@@ -59,3 +59,34 @@ def test_login_and_me(api_client):
 def test_chat_requires_auth(api_client):
     response = api_client.post("/chat", json={"question": "hola"})
     assert response.status_code == 401
+
+
+def test_admin_users_requires_admin(api_client):
+    denied = api_client.get("/admin/users")
+    assert denied.status_code == 401
+
+    login = api_client.post(
+        "/auth/login",
+        json={"username": "admin", "password": "AdminTest123!"},
+    )
+    assert login.status_code == 200
+    token = login.json()["access_token"]
+    headers = {"Authorization": f"Bearer {token}"}
+
+    roles = api_client.get("/admin/roles", headers=headers)
+    assert roles.status_code == 200
+    assert any(role["name"] == "estudiante" for role in roles.json())
+
+    users = api_client.get("/admin/users", headers=headers)
+    assert users.status_code == 200
+    assert any(user["username"] == "admin" for user in users.json())
+
+    created = api_client.post(
+        "/admin/users",
+        headers=headers,
+        json={"username": "demo_estudiante", "password": "DemoUser123!", "role_name": "estudiante"},
+    )
+    assert created.status_code == 201, created.text
+    body = created.json()
+    assert body["username"] == "demo_estudiante"
+    assert body["permissions"]["certifications"] == "partial"

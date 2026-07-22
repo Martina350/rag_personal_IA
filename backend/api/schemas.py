@@ -61,3 +61,27 @@ class HealthResponse(BaseModel):
 
 class MessageResponse(BaseModel):
     message: str
+
+
+class AdminUserOut(BaseModel):
+    id: int
+    username: str
+    role_name: str
+    role_label: str
+    is_active: bool
+    is_admin: bool
+    permissions: dict[str, str]
+    created_at: str | None = None
+
+
+class AdminRoleOut(BaseModel):
+    name: str
+    label: str
+    tone_key: str
+    permissions: dict[str, str]
+
+
+class AdminCreateUserRequest(BaseModel):
+    username: str = Field(min_length=1, max_length=64)
+    password: str = Field(min_length=8, max_length=128)
+    role_name: str = Field(min_length=1, max_length=64)

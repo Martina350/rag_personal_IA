@@ -5,6 +5,24 @@ export type Permissions = {
   sensitive: string
 }
 
+export type AdminUser = {
+  id: number
+  username: string
+  role_name: string
+  role_label: string
+  is_active: boolean
+  is_admin: boolean
+  permissions: Permissions
+  created_at: string | null
+}
+
+export type AdminRole = {
+  name: string
+  label: string
+  tone_key: string
+  permissions: Permissions
+}
+
 export type UserMe = {
   username: string
   role_name: string

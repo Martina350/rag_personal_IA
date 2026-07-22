@@ -5,6 +5,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from api.routes import admin as admin_routes
 from api.routes import auth as auth_routes
 from api.routes import chat as chat_routes
 from api.routes import health as health_routes
@@ -47,5 +48,6 @@ app.add_middleware(
 )
 
 app.include_router(auth_routes.router)
+app.include_router(admin_routes.router)
 app.include_router(chat_routes.router)
 app.include_router(health_routes.router)
