@@ -234,6 +234,18 @@ export function AdminUsersPage() {
   const [confirmPassword, setConfirmPassword] = useState('')
   const [roleName, setRoleName] = useState('general')
 
+  const toastMessage = success ?? (error && !createOpen ? error : null)
+  const toastTone = success ? 'success' : 'error'
+
+  useEffect(() => {
+    if (!toastMessage) return
+    const timer = window.setTimeout(() => {
+      setSuccess(null)
+      if (!createOpen) setError(null)
+    }, 3500)
+    return () => window.clearTimeout(timer)
+  }, [toastMessage, createOpen])
+
   const selectedRole = useMemo(
     () => roles.find((role) => role.name === roleName) ?? null,
     [roles, roleName],
@@ -341,6 +353,16 @@ export function AdminUsersPage() {
 
   return (
     <div className="admin-page">
+      {toastMessage ? (
+        <div
+          className={`admin-toast alert alert-${toastTone}`}
+          role="status"
+          aria-live="polite"
+        >
+          {toastMessage}
+        </div>
+      ) : null}
+
       <header className="admin-header">
         <div>
           <h1>Gestión de usuarios</h1>
@@ -350,9 +372,6 @@ export function AdminUsersPage() {
           </p>
         </div>
       </header>
-
-      {error && !createOpen ? <div className="alert alert-error">{error}</div> : null}
-      {success ? <div className="alert alert-success">{success}</div> : null}
 
       <section className="card admin-card admin-card-full">
         <div className="admin-section-head">
