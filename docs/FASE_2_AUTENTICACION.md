@@ -1,5 +1,7 @@
 # Fase 2: autenticación y autorización
 
+> Implementación operativa y monorepo: consulte `docs/FASE_2_IMPLEMENTACION.md`.
+
 ## Objetivo
 
 Permitir consultas únicamente a usuarios registrados y con claves autorizadas.
@@ -45,4 +47,52 @@ Las contraseñas nunca deben guardarse en texto plano.
 
 ## Actividad
 
-Diseñe una base SQLite con tablas `users`, `roles`, `permissions` y `audit_events`. Implemente autenticación por consola antes de migrar a web.
+Diseñe una base con tablas `users`, `roles`, `permissions` y `audit_events`
+(más `sessions` para expiración). En este repositorio la implementación usa
+**PostgreSQL + pgAdmin** (equivalente funcional a SQLite del enunciado pedagógico).
+
+Implemente autenticación por consola antes de migrar a web:
+
+```powershell
+python -m auth.cli init-db
+python -m auth.cli login
+python -m src.cli chat
+```
+
+Carpetas previstas del monorepo: `auth/` (fase 2), `api/` (FastAPI), `frontend/` (React-Vite).
+
+### Fase C (autorización sobre el RAG)
+
+Con sesión activa, `PersonalRAG.ask` filtra fragmentos según la matriz:
+
+- `curriculum` → recurso `profile`
+- `certificacion` → recurso `certifications`
+- `proyecto` → recurso `projects`
+- Acceso `partial`: se incluye el fragmento recortado
+- Acceso `none`: se excluye; si no queda contexto autorizado, se niega la consulta
+
+### Fase D (API FastAPI)
+
+```powershell
+uvicorn api.main:app --reload --host 127.0.0.1 --port 8000
+```
+
+- Docs interactivas: http://127.0.0.1:8000/docs
+- `POST /auth/login` → token Bearer
+- `GET /auth/me`, `POST /auth/logout`
+- `POST /chat` → reutiliza `PersonalRAG` + permisos (fuentes solo admin)
+- `GET /health`
+
+No abra a la vez `src.cli chat` y la API: Qdrant local usa un solo proceso sobre `storage/qdrant`.
+
+### Fase E (frontend React + Vite)
+
+```powershell
+cd frontend
+npm install
+npm run dev
+```
+
+- http://127.0.0.1:5173
+- Pantallas: login, inicio, consultar (tono + historial local)
+- Solo APIs actuales; sin administración web
