@@ -1,10 +1,10 @@
 # RAG Personal con Ollama, LlamaIndex y Qdrant
 
-Proyecto pedagógico y profesional para construir un asistente local que responda preguntas sobre Kevin a partir de documentos autorizados, principalmente su hoja de vida y certificaciones en PDF.
+Proyecto pedagógico y profesional para construir un asistente local que responda preguntas sobre Martina a partir de documentos autorizados, principalmente su hoja de vida y certificaciones en PDF.
 
 La interfaz inicial funciona por consola. El asistente responde en primera persona, detecta el idioma y adapta el tono según el tipo de usuario: reclutador, cliente, estudiante, colega o público general.
 
-> **Regla principal:** si la respuesta no está sustentada en los documentos, el sistema no inventa. Responde: **«Para ampliar esta información, habla directamente con Kevin a través de sus canales oficiales».**
+> **Regla principal:** si la respuesta no está sustentada en los documentos, el sistema no inventa. Responde: **«Para ampliar esta información, habla directamente con Martina a través de sus canales oficiales».**
 
 ## 1. Objetivo
 

@@ -15,11 +15,11 @@ PARTIAL_MAX_CHARS = 220
 
 DENIAL_ES = (
     "No tienes permiso para consultar ese tipo de información con tu rol actual. "
-    "Si necesitas ampliar el acceso, habla directamente con Kevin a través de sus canales oficiales."
+    "Si necesitas ampliar el acceso, habla directamente con Martina a través de sus canales oficiales."
 )
 DENIAL_EN = (
     "You do not have permission to access that type of information with your current role. "
-    "For broader access, speak directly with Kevin through his official channels."
+    "For broader access, speak directly with Martina through her official channels."
 )
 
 

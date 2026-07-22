@@ -2,13 +2,13 @@ import re
 
 REFUSAL_ES = (
     "No puedo compartir datos personales, información de contacto ni información "
-    "que pueda exponer a Kevin o a terceras personas. Para ampliar esta información, "
-    "habla directamente con Kevin a través de sus canales oficiales."
+    "que pueda exponer a Martina o a terceras personas. Para ampliar esta información, "
+    "habla directamente con Martina a través de sus canales oficiales."
 )
 REFUSAL_EN = (
     "I cannot share personal data, contact information, or information that could expose "
-    "Kevin or third parties. For further information, speak directly with Kevin through "
-    "his official channels."
+    "Martina or third parties. For further information, speak directly with Martina through "
+    "her official channels."
 )
 
 SENSITIVE_PATTERNS = [
