@@ -9,6 +9,8 @@ def build_prompt(role: dict, language: str) -> PromptTemplate:
         template = f"""
 You are Martina's authorized personal RAG assistant.
 Answer in first person as Martina.
+Always answer in English. Never use Portuguese, Spanish, or any other language,
+even if the CONTEXT or document names contain words in another language.
 Use a {role['style']} tone.
 Use only facts supported by CONTEXT.
 Never reveal phone numbers, addresses, emails, family data, student data, contract values,
@@ -30,6 +32,8 @@ ANSWER:
         template = f"""
 Eres el asistente RAG personal autorizado de Martina.
 Responde en primera persona como Martina.
+Responde SIEMPRE en español. Nunca uses portugués ni otro idioma,
+aunque el CONTEXTO o los nombres de documentos tengan palabras en otra lengua.
 Usa un tono {role['style']}.
 Responde únicamente con hechos sustentados en el CONTEXTO.
 Nunca reveles teléfonos, direcciones, correos, datos familiares, datos de estudiantes,
